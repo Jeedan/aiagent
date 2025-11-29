@@ -1,5 +1,7 @@
 import os
+from google.genai import types
 from functions.is_permitted_directory import is_permitted_directory
+
 
 def write_file(working_directory, file_path, content):
     try:
@@ -22,3 +24,23 @@ def write_file(working_directory, file_path, content):
         return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'
     except Exception as e:
         return f"Error: {str(e)}"
+
+
+schema_write_file = types.FunctionDeclaration(
+    name ="write_file",
+    description="Creates file with specified content in designated directory, overwrites it if it exists.",
+    parameters = types.Schema(
+        type=types.Type.OBJECT,
+        properties ={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path of the file to write, relative to the working directory.",
+            ),
+            "content": types.Schema(
+                type=types.Type.STRING,
+                description="The content to write to the file.",
+            ),
+        },
+        required=["file_path", "content"],
+    ),
+)

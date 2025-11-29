@@ -1,6 +1,8 @@
 import os
+from google.genai import types
 from functions.config import MAX_CHARS
 from functions.is_permitted_directory import is_permitted_directory
+
 
 def get_file_content(working_directory, file_path):
     try:
@@ -25,3 +27,18 @@ def get_file_content(working_directory, file_path):
             return file_content_string
     except Exception as e:
         return f"Error: {str(e)}"
+    
+schema_get_file_content = types.FunctionDeclaration(
+    name ="get_file_content",
+    description="Lists the contents of a file in the specified directory along, truncates if it is too long.",
+    parameters = types.Schema(
+        type=types.Type.OBJECT,
+        properties ={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path of the file to read, relative to the working directory.",
+            ),
+        },
+        required=["file_path"]
+    ),
+)

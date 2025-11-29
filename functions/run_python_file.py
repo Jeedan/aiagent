@@ -1,6 +1,7 @@
 import os 
 import subprocess
 import sys
+from google.genai import types
 from functions.is_permitted_directory import is_permitted_directory
 
 def run_python_file(working_directory, file_path, args=[]):
@@ -34,3 +35,27 @@ def run_python_file(working_directory, file_path, args=[]):
         return result
     except Exception as e:
         return f"Error: executing Python file: {e}"
+
+
+
+schema_run_python_file = types.FunctionDeclaration(
+    name ="run_python_file",
+    description="Runs a Python file in the designated directory if it exists. Then outputs the STDOUT and STDERR of the execution.",
+    parameters = types.Schema(
+        type=types.Type.OBJECT, 
+        properties ={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path of the Python file to execute, relative to the working directory.",
+            ),
+            "args": types.Schema(
+                type=types.Type.ARRAY,
+                description="The list of arguments to pass to the Python file during execution.",
+                items=types.Schema(
+                    type=types.Type.STRING,
+                ),
+            ),
+        },
+        required=["file_path"]
+    ),
+)

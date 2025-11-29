@@ -1,6 +1,6 @@
 import os
-from functions.is_permitted_directory import is_permitted_directory
 from google.genai import types
+from functions.is_permitted_directory import is_permitted_directory
 
 def get_files_info(working_directory, directory="."):
     final_string = "" 
