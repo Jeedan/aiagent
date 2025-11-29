@@ -1,6 +1,6 @@
 import os
 from google.genai import types
-from functions.config import MAX_CHARS
+from config import MAX_CHARS
 from functions.is_permitted_directory import is_permitted_directory
 
 
