@@ -9,8 +9,6 @@ When a user asks a question or makes a request about the code, you MUST:
 All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
 """
 
-
-
 # system_prompt = """
 # You are a helpful AI coding agent.
 

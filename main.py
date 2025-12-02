@@ -33,9 +33,10 @@ def print_token_metadata(response, user_prompt):
     tokens_remaining = response.usage_metadata.candidates_token_count
     # print the response as well as the tokens 
     print(f"""User prompt: {user_prompt}\nPrompt tokens: {tokens_in_prompt}\nResponse tokens: {tokens_remaining}""")
+        
 
-def generate_content(client, messages, verbose=False):
-    mode_name = 'gemini-2.0-flash-001'
+def generate_content(user_prompt, client, messages, verbose=False):
+    mode_name = 'gemini-2.0-flash-001'#'gemini-2.5-flash'
     response = client.models.generate_content(
             model=mode_name, 
             contents=messages,
@@ -52,6 +53,12 @@ def generate_content(client, messages, verbose=False):
     response_functions = response.function_calls
     function_response_list = []
 
+    if not response.usage_metadata:
+        raise RuntimeError("Gemini API response appears to be malformed")
+    
+    if verbose:
+        print_token_metadata(response, user_prompt)
+
     if response_functions:
         for fc in response_functions:
             function_call_result = call_function(fc, verbose=verbose)
@@ -61,13 +68,14 @@ def generate_content(client, messages, verbose=False):
             if verbose:
                 print(f"-> {function_call_result.parts[0].function_response.response}")
     
+
     if not response.function_calls and response.text != "":
         return response.text
 
     if function_response_list and len(function_response_list) > 0:
         messages.append(
             types.Content(role="user", parts=function_response_list))
-        
+
     return None
 
 def generate_gemini_response(user_prompt, verbose=False):
@@ -93,7 +101,7 @@ def generate_gemini_response(user_prompt, verbose=False):
             break
 
         try:
-            final_response = generate_content(client, messages, verbose)
+            final_response = generate_content(user_prompt, client, messages, verbose)
             if final_response:
                 print("Final response:")
                 print(final_response)
@@ -109,8 +117,6 @@ def main():
     print("Hello from aiagent!\n")
    
     # the prompt we send to the ai model
-    user_prompt = ""
- 
     has_verbose_flag = contains_verbose_flag(sys.argv[1:])
     user_prompt = get_user_prompt(verbose_flag=has_verbose_flag)
     
